@@ -51,11 +51,12 @@ namespace EsriApi
 
             //Custom Services
             services.AddTransient<IUsaCountiesService, UsaStatesService>();
+            services.AddTransient<BackgroundProcessing>();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IRecurringJobManager recurringJob)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IRecurringJobManager recurringJob, BackgroundProcessing processing)
         {
             app.UseCors("CorsPolicy");
 
@@ -80,6 +81,8 @@ namespace EsriApi
             {
                 endpoints.MapControllers();
             });
+
+            processing.RecurringUpdateDb().GetAwaiter().GetResult();
 
             async Task SeedHangFireJobs(IRecurringJobManager recurringJob)
             {
