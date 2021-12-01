@@ -1,0 +1,70 @@
+﻿@page "/usaStatesTable"
+
+@using Dtos
+@using EsriClient.Models
+@inject HttpClient Client
+
+<div class="text-center">Usa States</div>
+<br />
+<EditForm Model="@editFormModel" OnValidSubmit="@SearchState">
+    <DataAnnotationsValidator />
+    <InputText @bind-Value="editFormModel.StateName" />
+    <ValidationMessage For="@(() => editFormModel.StateName)"></ValidationMessage>
+    <button type="submit">Search</button>
+</EditForm>
+
+
+@if (model == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">State</th>
+                <th scope="col">Population</th>
+            </tr>
+        </thead>
+        @foreach (var state in model.OrderBy(x => x.StateName))
+        {
+            if (state.StateName == null)
+            {
+                <tr>Nothing Found</tr>
+            }
+
+            else
+            {
+                <tbody>
+                    <tr>
+                        <th scope="row">@numbering</th>
+                        <td>@state.StateName</td>
+                        <td>@state.Population.ToString("### ### ###")</td>
+                    </tr>
+                </tbody>
+                numbering++;
+            }
+        }
+    </table>
+}
+@code {
+
+    private int numbering = 1;
+    private ICollection<UsaStateResponseModel> model;
+    private readonly EditFormModel editFormModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await Client.GetFromJsonAsync<List<UsaStateResponseModel>>("/api/UsaStates/GetAll");
+    }
+
+    private async Task SearchState()
+    {
+        var state = await Client.GetFromJsonAsync<UsaStateResponseModel>($"/api/UsaStates/GetByStateName?stateName={editFormModel.StateName}");
+        var searchedStates = new List<UsaStateResponseModel> { state };
+        model = searchedStates;
+        numbering = 1;
+    }
+}
