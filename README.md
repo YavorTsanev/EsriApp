@@ -11,3 +11,6 @@ for each state) and filter the result by state name (STATE_NAME field).
 - Microsoft SQL Server Express - relational database management system.
 - Entity Framework Core 5 - object-database mapper for . NET. It supports LINQ queries, change tracking, updates, and schema migrations and works whit SQL Server.
 - Blazor WebAssembly - create single-page applications (SPAs) using C# and . NET utilising a component-based architecture.
+
+## ⏯️ To Start the App
+- Download 
